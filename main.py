@@ -7,11 +7,14 @@ import line_plotting, h5py, argparse, os
 from mpl_toolkits import mplot3d
 from scipy.signal import detrend
 from scipy import stats
+import scipy.misc
 os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from scipy.signal import savgol_filter as sg
+from PIL import Image
+#import PIL.ImageOps
 
 def smad(freq_time, sigma, clip=True):
     freq_time=freq_time.copy()
@@ -79,13 +82,13 @@ def main(**options):
 
     #map = preprocessing.scale(np.array(freq_time, dtype=float), axis=1)*5000
     map = np.array(scut, dtype=float)
-    print('map.shape=', map.shape)
+    #print('map.shape=', map.shape)
     
     if True: #plot map
         plt.imshow(map)
         plt.show(block=True)
         plt.savefig('input.png')
-        print(f"max:{np.max(map)}, min:{np.min(map)}: std:{np.std(map)}")
+        #print(f"max:{np.max(map)}, min:{np.min(map)}: std:{np.std(map)}")
     #map = map[::-1, :] # reverse y axis
 
     # create grid
@@ -97,14 +100,16 @@ def main(**options):
     #print(f"x: {x}")
     #print(f"y_values: {y_values}")
     highest_value = np.max(map)
-    print('highest_value=', highest_value)
+    #print('highest_value=', highest_value)
     # create figure
+    #cmap = plt.get_cmap('binary_r')#try to flip the colors
+    plt.style.use('dark_background')
     cmap = plt.get_cmap('binary')
     fig, ax = plt.subplots()
     fig.set_facecolor((1.0, 1.0, 1.0))
     ax.set_aspect('equal')
-    print(map.shape[1])
-    print(map.shape[0]*1.3)
+    #print(map.shape[1])
+    #print(map.shape[0]*1.3)
     ax.set_xlim(0, map.shape[1])
     ax.set_ylim(0, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
     ax.set_axis_off()
@@ -148,9 +153,13 @@ def main(**options):
     #plt.savefig("graph.svg")
     print('\nsaving png')
     if options["name"]:
-        plt.savefig(options["name"])#, dpi=500)
+        img_name = options["name"]
     else:
-        plt.savefig(os.path.splitext(os.path.basename(options["file"]))[0]+'.png', dpi=400)
+        img_name = os.path.splitext(os.path.basename(options["file"]))[0]+'.png'
+    plt.savefig(img_name, dpi=400)
+    #image = Image.open(img_name)
+    #inverted = 1 - np.asarray(image)
+    #scipy.misc.imsave('inverted_'+img_name, inverted)
     #plt.show()
 
 
