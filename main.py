@@ -78,7 +78,7 @@ def main(**options):
     scut = smad(freq_time, sigma)
     sg_smooth = True
     if sg_smooth:
-        scut = spec_sad(scut, window=7)
+        scut = spec_sad(scut, window=options['smooth'])
 
     #map = preprocessing.scale(np.array(freq_time, dtype=float), axis=1)*5000
     map = np.array(scut, dtype=float)
@@ -102,9 +102,9 @@ def main(**options):
     highest_value = np.max(map)
     #print('highest_value=', highest_value)
     # create figure
-    #cmap = plt.get_cmap('binary_r')#try to flip the colors
     plt.style.use('dark_background')
-    cmap = plt.get_cmap('binary')
+    #cmap = plt.get_cmap('binary')
+    cmap = plt.get_cmap('binary_r')#try to flip the colors
     fig, ax = plt.subplots()
     fig.set_facecolor((1.0, 1.0, 1.0))
     ax.set_aspect('equal')
@@ -144,7 +144,8 @@ def main(**options):
             #z_int[remove_values] = np.nan
 
         # set dynamics colors and widths
-        colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
+        #colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]#original
+        colors = [cmap(0.25+0.75*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
         widths = [0.1 + 0.2*value / highest_value for value in z_int]
 
         line_plotting.plot_line_2d(ax, x_int, y_int, z_int, z_fraction=options['z_frac'], linewidths=widths, linecolors=colors)
@@ -181,7 +182,7 @@ if __name__ == "__main__":
                           default=".")
     semi_opt.add_argument('-s','--smooth',type=int,
                           help='How much to smooth the spectra',
-                          default=30000)
+                          default=7)
     semi_opt.add_argument('-z','--z_frac',type=float,
                           help='z fraction',
                           default=10)
