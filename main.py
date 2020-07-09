@@ -11,13 +11,23 @@ import scipy.misc
 os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from sklearn import preprocessing
 from scipy.signal import savgol_filter as sg
-from PIL import Image
-#import PIL.ImageOps
 
-def smad(freq_time, sigma, clip=True):
-    freq_time=freq_time.copy()
+def smad(freq_time, sigma=3, clip=True):
+    """
+    Spectral Median Absoulte Deviation filter to clip rfi 
+
+    Args:
+        freq_time: freq_time/dynamic spectra to be filtered
+
+        sigma: sigma to clip at
+
+        clip: clip the values to the given sigma 
+
+    Returns:
+
+        Dynamic Spectra with the values clipped
+    """
     #mads = stats.median_absolute_deviation(freq_time, axis=0)
     #threshold=1.4826*sigma
     #for j,k in enumerate(mads):
@@ -35,26 +45,35 @@ def smad(freq_time, sigma, clip=True):
             freq_time[np.absolute(freq_time[:, j] - medians[j]) >= sig, j] = 0.0
         return freq_time
 
-def spec_sad(gulp, window=65):
-    gulp = gulp.copy()
+def spec_sad(gulp, window=7):
     """
-    Calculates Savgol Absolute Deviations along the spectral axis
+    Uses Savgol filter to smooth along the time axis
 
     Args:
-       frame: number of time samples to calculate the SAD
+       gulp: dynamic spectra to be smoothed
 
-       sigma: cutoff sigma
+       window: number of point to smooth
 
     Returns:
      
-       Dynamic Spectrum with values clipped
+       Dynamic Spectrum smoothed along the time axis
     """
     data_type = gulp.dtype
     return sg(gulp, window, 2, axis=1).astype(data_type)
 
  
 def main(**options):
-   #import h5 to numpy array
+    """
+    Produces Joy Division Unknown Pleasures like plots of dynamic spectra
+ 
+    Args: 
+        options: A dictionary with user parameters 
+    
+    Returns:
+  
+        Nothing
+
+    """
     with h5py.File(options['file'], 'r') as f:
         dm_time = np.array(f['data_dm_time'])
         freq_time = detrend(np.array(f['data_freq_time'])[:, ::-1].T)
@@ -74,21 +93,15 @@ def main(**options):
     else:
             ts = np.linspace(-128, 128, 256) * tsamp * 1000
 
-    sigma=3.0
-    scut = smad(freq_time, sigma)
-    sg_smooth = True
-    if sg_smooth:
-        scut = spec_sad(scut, window=options['smooth'])
+    scut = smad(freq_time, sigma=3) #clip using spectral mad filter
+    scut = spec_sad(scut, window=options['smooth']) #use a Savitzky-Golay filter to smooth along the frequency axis
 
-    #map = preprocessing.scale(np.array(freq_time, dtype=float), axis=1)*5000
     map = np.array(scut, dtype=float)
-    #print('map.shape=', map.shape)
+        
+    #plt.imshow(map) #plot input data
+    #plt.show(block=True)
+    #plt.savefig('input.png')
     
-    if True: #plot map
-        plt.imshow(map)
-        plt.show(block=True)
-        plt.savefig('input.png')
-        #print(f"max:{np.max(map)}, min:{np.min(map)}: std:{np.std(map)}")
     #map = map[::-1, :] # reverse y axis
 
     # create grid
@@ -97,28 +110,26 @@ def main(**options):
     n_int_points = 1700
     x = np.linspace(0, map.shape[1]-1, n_points, dtype=int)
     y_values = np.linspace(0, map.shape[0]-1, n_lines, dtype=int)
-    #print(f"x: {x}")
-    #print(f"y_values: {y_values}")
     highest_value = np.max(map)
-    #print('highest_value=', highest_value)
+    
     # create figure
     plt.style.use('dark_background')
     #cmap = plt.get_cmap('binary')
-    cmap = plt.get_cmap('binary_r')#try to flip the colors
+    cmap = plt.get_cmap('binary_r')#flip the colors for dark background
     fig, ax = plt.subplots()
     fig.set_facecolor((1.0, 1.0, 1.0))
     ax.set_aspect('equal')
-    #print(map.shape[1])
-    #print(map.shape[0]*1.3)
+    #ax.set_xlim(0, map.shape[0]*1.3)
+    #ax.set_ylim(-map.shape[0]*0.4, map.shape[0]*1.4)
     ax.set_xlim(0, map.shape[1])
-    ax.set_ylim(0, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
+    ax.set_ylim(-40, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
     ax.set_axis_off()
 
     # draw each individual line
     y_values_test = y_values[len(y_values)//3:len(y_values)//3+10]
 
     for y_value in y_values:
-        print('drawing line at y_value=', y_value, end='\r')
+        print(f'Drawing line at y_value={y_value}', end='\r')
 
         # get z data from map
         line = np.array(np.ones(n_points)*y_value, dtype=int)
@@ -145,23 +156,23 @@ def main(**options):
 
         # set dynamics colors and widths
         #colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]#original
-        colors = [cmap(0.25+0.75*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
+        colors = [cmap(1.0-options['taper']+options['taper']*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
         widths = [0.1 + 0.2*value / highest_value for value in z_int]
 
         line_plotting.plot_line_2d(ax, x_int, y_int, z_int, z_fraction=options['z_frac'], linewidths=widths, linecolors=colors)
 
     #print('saving svg')
     #plt.savefig("graph.svg")
-    print('\nsaving png')
+    
     if options["name"]:
         img_name = options["name"]
     else:
         img_name = os.path.splitext(os.path.basename(options["file"]))[0]+'.png'
+     
+    print(f'\nSaving {img_name}')
+    #plt.tight_layout()
     plt.savefig(img_name, dpi=400)
-    #image = Image.open(img_name)
-    #inverted = 1 - np.asarray(image)
-    #scipy.misc.imsave('inverted_'+img_name, inverted)
-    #plt.show()
+    print('Done!')
 
 
 if __name__ == "__main__":
@@ -186,7 +197,10 @@ if __name__ == "__main__":
     semi_opt.add_argument('-z','--z_frac',type=float,
                           help='z fraction',
                           default=10)
-        
+    semi_opt.add_argument('-t','--taper',type=float,
+                          help='illumination taper, 0=no taper, 1 full taper',
+                          default=0.80)
+
     optional=parser.add_argument_group('other optional arguments:')
     optional.add_argument('-n','--name',type=int,nargs='+',
                           help="name of outputfile, default: input name")
