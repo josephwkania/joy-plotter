@@ -116,13 +116,16 @@ def main(**options):
     plt.style.use('dark_background')
     #cmap = plt.get_cmap('binary')
     cmap = plt.get_cmap('binary_r')#flip the colors for dark background
-    fig, ax = plt.subplots()
+    #fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5,5))
+
     fig.set_facecolor((1.0, 1.0, 1.0))
     ax.set_aspect('equal')
+    
     #ax.set_xlim(0, map.shape[0]*1.3)
     #ax.set_ylim(-map.shape[0]*0.4, map.shape[0]*1.4)
-    ax.set_xlim(0, map.shape[1])
-    ax.set_ylim(-40, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
+    #ax.set_xlim(0, map.shape[1])
+    #ax.set_ylim(-40, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
     ax.set_axis_off()
 
     # draw each individual line
