@@ -102,7 +102,8 @@ def main(**options):
     #plt.show(block=True)
     #plt.savefig('input.png')
     
-    #map = map[::-1, :] # reverse y axis
+    if options['flip']:
+         map = map[::-1, :] # reverse y axis
 
     # create grid
     n_lines = 256
@@ -131,8 +132,8 @@ def main(**options):
     # draw each individual line
     y_values_test = y_values[len(y_values)//3:len(y_values)//3+10]
 
-    for y_value in y_values:
-        print(f'Drawing line at y_value={y_value}', end='\r')
+    for y_value in y_values[::-1]:
+        print(f'Drawing line at y_value={y_value}  ', end='\r')
 
         # get z data from map
         line = np.array(np.ones(n_points)*y_value, dtype=int)
@@ -144,8 +145,8 @@ def main(**options):
 
         smoothen = False
         # interpolate to n_int_points
-        if smoothen:
-            tck = interpolate.splrep(x, z, s=options['smooth'], k=1)#s=30000000, k=1)
+        if smoothen: 
+            tck = interpolate.splrep(x, z, k=3)#s=30000000, k=1)
             x_int = np.linspace(min(x), max(x), n_int_points)
             z_int = interpolate.splev(x_int, tck)
             y_int = np.array(np.ones(n_int_points)*y_value, dtype=int)
@@ -160,7 +161,7 @@ def main(**options):
         # set dynamics colors and widths
         #colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]#original
         colors = [cmap(1.0-options['taper']+options['taper']*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
-        widths = [0.1 + 0.2*value / highest_value for value in z_int]
+        widths = [0.2 + 0.2*value / highest_value for value in z_int]
 
         line_plotting.plot_line_2d(ax, x_int, y_int, z_int, z_fraction=options['z_frac'], linewidths=widths, linecolors=colors)
 
@@ -203,10 +204,11 @@ if __name__ == "__main__":
     semi_opt.add_argument('-t','--taper',type=float,
                           help='illumination taper, 0=no taper, 1 full taper',
                           default=0.80)
+    semi_opt.add_argument('--flip', type=bool, 
+                          help='flip the frequencies order', default=True)
 
     optional=parser.add_argument_group('other optional arguments:')
     optional.add_argument('-n','--name',type=int,nargs='+',
                           help="name of outputfile, default: input name")
-
     args = vars(parser.parse_args())
     main(**args) 
