@@ -143,10 +143,12 @@ def main(**options):
         #remove_values = z < -30000
         #z[remove_values] = 0
 
-        smoothen = False
+         
         # interpolate to n_int_points
-        if smoothen: 
-            tck = interpolate.splrep(x, z, k=3)#s=30000000, k=1)
+        if options['digital']: 
+            x_new = np.linspace(min(x), max(x), num=len(x))
+            #tck = interpolate.CubicSpline(x_new, z)
+            tck = interpolate.splrep(x_new, z, k=1)#s=30000000, k=1)
             x_int = np.linspace(min(x), max(x), n_int_points)
             z_int = interpolate.splev(x_int, tck)
             y_int = np.array(np.ones(n_int_points)*y_value, dtype=int)
@@ -204,8 +206,11 @@ if __name__ == "__main__":
     semi_opt.add_argument('-t','--taper',type=float,
                           help='illumination taper, 0=no taper, 1 full taper',
                           default=0.80)
-    semi_opt.add_argument('--flip', type=bool, 
+    semi_opt.add_argument('--flip',action='store_false', 
                           help='flip the frequencies order', default=True)
+    semi_opt.add_argument('--digital',action='store_true',
+                          help='Use discrete levels', default=False)
+
 
     optional=parser.add_argument_group('other optional arguments:')
     optional.add_argument('-n','--name',type=int,nargs='+',
