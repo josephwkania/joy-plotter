@@ -14,6 +14,6 @@ python joy-plotter.py -f example_h5s/cand_tstart_59014.453037564723_tcand_492.03
 
 ./joy-plotter.py -f example_h5s/cand_tstart_59048.035549138796_tcand_439.4510000_dm_23.11940_snr_28.39410.h5 --digital
 
-![Output of the above command](https://github.com/josephwkania/joy-plotter/blob/master/cand_tstart_59014.453037564723_tcand_499.3820000_dm_57.08550_snr_83.16930.pn)
+![Output of the above command](https://github.com/josephwkania/joy-plotter/blob/master/cand_tstart_59014.453037564723_tcand_499.3820000_dm_57.08550_snr_83.16930.png)
 
 Need .h5 cand files? Give <a href="https://github.com/devanshkv/your">Your</a> a try on your fits and filterbanks
