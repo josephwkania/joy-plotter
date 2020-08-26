@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter as sg
 from scipy import stats
 import os
 import line_plotting
-#from mpl_toolkits import mplot3d
+# from mpl_toolkits import mplot3d
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 matplotlib.use("Agg")
@@ -25,7 +25,7 @@ def smad(freq_time, sigma=3, clip=True):
 
         sigma: sigma to clip at
 
-        clip: clip the values to the given sigma 
+        clip: clip the values to the given sigma
 
     Returns:
 
@@ -69,12 +69,12 @@ def spec_sad(gulp, window=7):
 def main():
     """
     Produces Joy Division Unknown Pleasures like plots of dynamic spectra
- 
-    Args: 
-        None 
+
+    Args:
+        None
 
     Returns:
-  
+
         Nothing
 
     """
@@ -185,7 +185,7 @@ def main():
     ax.set_axis_off()
 
     # draw each individual line
-    y_values_test = y_values[len(y_values) // 3 : len(y_values) // 3 + 10]
+    # y_values_test = y_values[len(y_values) // 3: len(y_values) // 3 + 10]
 
     for y_value in y_values[::-1]:
         print(f"Drawing line at y_value={y_value}  ", end="\r")
