@@ -4,11 +4,7 @@ import numpy as np
 import matplotlib
 from scipy import interpolate
 import  h5py, argparse, os
-#try:
-#     from joy_plotter import line_plotting
-#except:
-#import line_plotting
-from  joy_plotter import line_plotting
+import line_plotting
 from mpl_toolkits import mplot3d
 from scipy.signal import detrend
 from scipy import stats
