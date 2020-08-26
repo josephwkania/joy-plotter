@@ -174,6 +174,7 @@ def main():
     plt.style.use("cyberpunk")
     
     cmap = plt.get_cmap("binary_r")  # flip the colors for dark background
+    #cmap = plt.get_cmap()
     # fig, ax = plt.subplots()
     fig, ax = plt.subplots(figsize=(5, 5))
 
@@ -233,7 +234,7 @@ def main():
             z_int,
             z_fraction=options["z_frac"],
             linewidths=widths,
-            linecolors=colors,
+            # linecolors=colors,
         )
 
     # print('saving svg')
