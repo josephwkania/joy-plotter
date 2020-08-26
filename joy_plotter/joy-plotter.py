@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 
-import numpy as np
+import argparse
+import h5py
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy import interpolate
-import  h5py, argparse, os
-import line_plotting
-from mpl_toolkits import mplot3d
 from scipy.signal import detrend
+from scipy.signal import savgol_filter as sg
 from scipy import stats
-import scipy.misc
-import mplcyberpunk
-#import matplotlib.pyplot as plt
-
-matplotlib.pyplot.style.use("cyberpunk")
+import os
+import line_plotting
+#from mpl_toolkits import mplot3d
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter as sg
-
 
 def smad(freq_time, sigma=3, clip=True):
     """
-    Spectral Median Absoulte Deviation filter to clip rfi 
+    Spectral Median Absoulte Deviation filter to clip rfi
 
     Args:
         freq_time: freq_time/dynamic spectra to be filtered
@@ -63,7 +59,7 @@ def spec_sad(gulp, window=7):
        window: number of point to smooth
 
     Returns:
-     
+
        Dynamic Spectrum smoothed along the time axis
     """
     data_type = gulp.dtype
@@ -76,7 +72,7 @@ def main():
  
     Args: 
         None 
-    
+
     Returns:
   
         Nothing

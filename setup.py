@@ -1,5 +1,5 @@
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("requirements.txt", "r") as f:
     required = f.read().splitlines()
@@ -11,7 +11,7 @@ setup(
     name="joy_plotter",
     version="0.1.0",
     #packages=["joy_plotter"],
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
     url="https://github.com/josephwkania/joy-plotter",
     install_requires=required,
     long_description=long_description,
@@ -20,7 +20,7 @@ setup(
     author_email="60994292+josephwkania@users.noreply.github.com",
     description="Makes Joy Division like plots from your .h5 cand files",
     #entry_points={"console_scripts": ["joy_plotter=joy_plotter.joy_plotter:main", ], },
-    scripts=["joy-plotter/joy-plotter.py","joy-plotter/line_plotting.py"],
+    scripts=["joy_plotter/joy-plotter.py","joy_plotter/line_plotting.py"],
     tests_require=["pytest", "pytest-cov"],
     classifiers=[
         "Programming Language :: Python :: 3.6",
