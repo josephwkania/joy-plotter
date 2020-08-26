@@ -12,6 +12,7 @@ from scipy import stats
 import os
 import line_plotting
 # from mpl_toolkits import mplot3d
+import mplcyberpunk
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 matplotlib.use("Agg")
@@ -169,8 +170,9 @@ def main():
     highest_value = np.max(map)
 
     # create figure
-    plt.style.use("dark_background")
-    # cmap = plt.get_cmap('binary')
+    # plt.style.use("dark_background")
+    plt.style.use("cyberpunk")
+    
     cmap = plt.get_cmap("binary_r")  # flip the colors for dark background
     # fig, ax = plt.subplots()
     fig, ax = plt.subplots(figsize=(5, 5))
