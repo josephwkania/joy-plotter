@@ -20,7 +20,7 @@ setup(
     author_email="60994292+josephwkania@users.noreply.github.com",
     description="Makes Joy Division like plots from your .h5 cand files",
     #entry_points={"console_scripts": ["joy_plotter=joy_plotter.joy_plotter:main", ], },
-    scripts=["joy_plotter/joy_plotter.py","joy_plotter/line_plotting.py"],
+    scripts=["joy-plotter/joy-plotter.py","joy-plotter/line_plotting.py"],
     tests_require=["pytest", "pytest-cov"],
     classifiers=[
         "Programming Language :: Python :: 3.6",

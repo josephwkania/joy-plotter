@@ -9,6 +9,10 @@ from mpl_toolkits import mplot3d
 from scipy.signal import detrend
 from scipy import stats
 import scipy.misc
+import mplcyberpunk
+#import matplotlib.pyplot as plt
+
+matplotlib.pyplot.style.use("cyberpunk")
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 matplotlib.use("Agg")
