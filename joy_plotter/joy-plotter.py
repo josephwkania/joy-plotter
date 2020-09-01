@@ -177,7 +177,7 @@ def main():
     #cmap = plt.get_cmap()
     # fig, ax = plt.subplots()
     fig, ax = plt.subplots(figsize=(5, 5))
-
+    mplcyberpunk.make_lines_glow(ax)
     fig.set_facecolor((1.0, 1.0, 1.0))
     ax.set_aspect("equal")
 
@@ -226,7 +226,7 @@ def main():
             for value in z_int
         ]
         widths = [0.2 + 0.2 * value / highest_value for value in z_int]
-
+        
         line_plotting.plot_line_2d(
             ax,
             x_int,
@@ -234,11 +234,12 @@ def main():
             z_int,
             z_fraction=options["z_frac"],
             linewidths=widths,
-            # linecolors=colors,
+            linecolors=colors,
         )
-
+        #mplcyberpunk.make_lines_glow(ax)
     # print('saving svg')
     # plt.savefig("graph.svg")
+    # mplcyberpunk.make_lines_glow(ax)
 
     if options["name"]:
         img_name = options["name"]
