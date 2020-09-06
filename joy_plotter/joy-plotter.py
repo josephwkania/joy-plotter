@@ -115,8 +115,8 @@ def main():
     optional.add_argument(
         "-n",
         "--name",
-        type=int,
-        nargs="+",
+        type=str,
+        nargs="?",
         help="name of outputfile, default: input name",
     )
     options = vars(parser.parse_args())
