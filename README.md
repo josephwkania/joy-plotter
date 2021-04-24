@@ -9,7 +9,7 @@
 
 ## Install 
 
-`pip install .`
+`pip install git+https://github.com/josephwkania/joy-plotter.git`
 
 ## Examples:
 
