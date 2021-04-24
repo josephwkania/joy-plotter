@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
+
 import h5py
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import interpolate
+from scipy import interpolate, stats
 from scipy.signal import detrend
 from scipy.signal import savgol_filter as sg
-from scipy import stats
-import os
+
 import line_plotting
+
 # from mpl_toolkits import mplot3d
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 matplotlib.use("Agg")
+
 
 def smad(freq_time, sigma=3, clip=True):
     """
@@ -40,7 +43,7 @@ def smad(freq_time, sigma=3, clip=True):
     #        freq_time[freq_time[:, j]<=-cut, j]=cut
     # return freq_time
     medians = np.median(freq_time, axis=0)
-    sigs = 1.4826 * sigma * stats.median_absolute_deviation(freq_time, axis=0)
+    sigs = sigma * stats.median_abs_deviation(freq_time, axis=0, scale='normal')
     if clip:
         return np.clip(freq_time, a_min=medians - sigs, a_max=medians + sigs)
     else:
@@ -128,6 +131,7 @@ def main():
         freq_time[freq_time != freq_time] = 0
         freq_time -= np.median(freq_time)
         freq_time /= np.std(freq_time)
+        """
         fch1, foff, nchan, dm, cand_id, tsamp, dm_opt, snr, snr_opt, width = (
             f.attrs["fch1"],
             f.attrs["foff"],
@@ -140,11 +144,12 @@ def main():
             f.attrs["snr_opt"],
             f.attrs["width"],
         )
+        """
 
-    if width > 1:
-        ts = np.linspace(-128, 128, 256) * tsamp * width * 1000 / 2
-    else:
-        ts = np.linspace(-128, 128, 256) * tsamp * 1000
+    # if width > 1:
+    #     ts = np.linspace(-128, 128, 256) * tsamp * width * 1000 / 2
+    # else:
+    #     ts = np.linspace(-128, 128, 256) * tsamp * 1000
 
     scut = smad(freq_time, sigma=3)  # clip using spectral mad filter
     scut = spec_sad(
@@ -181,7 +186,8 @@ def main():
     # ax.set_xlim(0, map.shape[0]*1.3)
     # ax.set_ylim(-map.shape[0]*0.4, map.shape[0]*1.4)
     # ax.set_xlim(0, map.shape[1])
-    # ax.set_ylim(-40, map.shape[0]*1.3) #add a bit to allow for mountains to flow over the figure
+    # ax.set_ylim(-40, map.shape[0]*1.3)
+    # add a bit to allow for mountains to flow over the figure
     ax.set_axis_off()
 
     # draw each individual line
@@ -215,7 +221,8 @@ def main():
             # z_int[remove_values] = np.nan
 
         # set dynamics colors and widths
-        # colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]#original
+        # colors = [cmap(0.15+0.85*value/highest_value) if not np.isnan(value) else cmap(0) for value in z_int]
+        # original
         colors = [
             cmap(1.0 - options["taper"] + options["taper"] * value / highest_value)
             if not np.isnan(value)
